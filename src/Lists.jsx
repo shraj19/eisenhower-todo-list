@@ -12,10 +12,15 @@ function Lists({items, setItems}) {
   )};
 
   return (
-    <>
+    <div className="list_container">
     <ul className="task_list">
       {items.map((item) => (
-        <li key={item.id}>
+        <li draggable 
+            onDragStart={(e) => {
+              e.dataTransfer.setData("text/plain", String(item.id));
+              // console.log("dragging", item.id);
+            }}
+            key={item.id}>
           <input type="checkbox" checked={item.completed} onChange={() => toggleCheckbox(item.id)}/>
           <span className="task_title" style={{ textDecoration: item.completed ? "line-through" : "none" }}>
             {item.text}
@@ -25,7 +30,7 @@ function Lists({items, setItems}) {
       ))}
     </ul>
 
-    </>
+    </div>
   )
 }
 

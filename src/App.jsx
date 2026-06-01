@@ -1,6 +1,12 @@
 import Lists from "./Lists.jsx";
 import {useState, useEffect} from "react";
 
+
+function getIncompleteCount(items) {
+  return items.filter(item => !item.completed).length;
+}
+
+
 function app() {
 
   const [tasks, setTasks] = useState (() => {
@@ -8,6 +14,17 @@ function app() {
     return savedTasks ? JSON.parse(savedTasks) : [];
   });
 
+  const [error, setError] = useState("");
+
+  const moveTask = (id, important, urgent) => {
+    // console.log(`Moving task ${id} to important: ${important}, urgent: ${urgent}`);
+    setTasks(prevTasks => prevTasks.map(task => {
+      if (task.id === id) {
+        return {...task, important, urgent};
+      }
+      return task;
+    }));
+  }
   useEffect(() => {
     localStorage.setItem("tasks", JSON.stringify(tasks));
   }, [tasks]);
@@ -18,6 +35,14 @@ function app() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    if (newTask.trim() === "") {
+      setError("Task cannot be empty");
+      return;
+    };
+
+    setError("");
+
     const newTaskObj = {
       id: Date.now(),
       text: newTask,
@@ -37,6 +62,7 @@ function app() {
   const notUrgentNotImportantTasks = tasks.filter(task => !task.urgent && !task.important);
   
 
+
   return (
     <>
     <div className="matrix">
@@ -45,29 +71,42 @@ function app() {
       <div className="horizontal header">Not Urgent</div>
 
       <div className="vertical header" >Important</div>
-      <div className="do">
-        <h2 className="quadrant-title">
-          🔥 Do ({urgentImportantTasks.length})
+      <div className="do" onDragOver={(e) => e.preventDefault()} onDrop={(e) => {
+        const id = parseInt(e.dataTransfer.getData("text/plain"));
+        moveTask(id, true, true);
+      }}>
+        <h2 className="quadrant-title" >
+          🔥 Do ({urgentImportantTasks.length}{urgentImportantTasks.length > 0 &&  ` • ${getIncompleteCount(urgentImportantTasks)} left`})
         </h2>
         <Lists items={urgentImportantTasks} setItems={setTasks} />
       </div>
-      <div className="schedule">
+
+      <div className="schedule" onDragOver={(e) => e.preventDefault()} onDrop={(e) => {
+        const id = parseInt(e.dataTransfer.getData("text/plain"));
+        moveTask(id, true, false);
+      }}>
         <h2 className="quadrant-title">
-          📅 Schedule ({notUrgentImportantTasks.length})
+          📅 Schedule ({notUrgentImportantTasks.length}{notUrgentImportantTasks.length > 0 && ` • ${getIncompleteCount(notUrgentImportantTasks)} left`})
         </h2>
         <Lists items={notUrgentImportantTasks} setItems={setTasks} />
       </div>
 
       <div className="vertical header">Not Important</div>
-      <div className="delegate">
+      <div className="delegate" onDragOver={(e) => e.preventDefault()} onDrop={(e) => {
+        const id = parseInt(e.dataTransfer.getData("text/plain"));
+        moveTask(id, false, true);
+      }}>
         <h2 className="quadrant-title">
-          🤝 Delegate ({urgentNotImportantTasks.length})
+          🤝 Delegate ({urgentNotImportantTasks.length}{urgentNotImportantTasks.length > 0 && ` • ${getIncompleteCount(urgentNotImportantTasks)} left`})
         </h2>
         <Lists items={urgentNotImportantTasks} setItems={setTasks} />
       </div>
-      <div className="eliminate">
+      <div className="eliminate" onDragOver={(e) => e.preventDefault()} onDrop={(e) => {
+        const id = parseInt(e.dataTransfer.getData("text/plain"));
+        moveTask(id, false, false);
+      }}>
         <h2 className="quadrant-title">
-          🗑️ Eliminate ({notUrgentNotImportantTasks.length})
+          🗑️ Eliminate ({notUrgentNotImportantTasks.length}{notUrgentNotImportantTasks.length > 0 && ` • ${getIncompleteCount(notUrgentNotImportantTasks)} left`})
         </h2>
         <Lists items={notUrgentNotImportantTasks} setItems={setTasks} />
       </div>
@@ -85,7 +124,7 @@ function app() {
         onChange={(e) => setNewTask(e.target.value)}
         placeholder="What needs to be done?"
         required
-      />
+      ></input>
     </div>
 
     <div className="options">
