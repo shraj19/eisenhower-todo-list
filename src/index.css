@@ -173,6 +173,69 @@ h1 {
   word-break: break-word;
 }
 
+.task_edit {
+  border: none;
+  background: #3b82f6;
+  color: white;
+
+  padding: 0.65rem 1rem;
+
+  border-radius: 8px;
+
+  font-size: 0.95rem;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.task_edit:hover {
+  background: #2563eb;
+  transform: scale(1.05);
+}
+
+.task_edit_input {
+  flex: 1;
+  padding: 0.65rem 1rem;
+
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+
+  font-size: 0.95rem;
+
+  transition: all 0.2s ease;
+}
+
+.task_edit_input:focus {
+  outline: none;
+  border-color: #3b82f6;
+
+  box-shadow: 0 0 0 5px rgba(59,130,246,0.12);
+}
+
+.task_save {
+  border: none;
+  background: #10b981;
+  color: white;
+
+  padding: 0.65rem 1rem;
+
+  border-radius: 8px;
+
+  font-size: 0.95rem;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.task_save:hover {
+  background: #059669;
+  transform: scale(1.05);
+}
+
 .task_delete {
   border: none;
   background: #ef4444;
